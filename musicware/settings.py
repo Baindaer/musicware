@@ -25,12 +25,13 @@ SECRET_KEY = 'hzvbsleco+0fy!qs!ljdzu&06+)frm+o0twco#fbo&bf%mh(n3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'journal.apps.JournalConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,10 +52,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'musicware.urls'
 
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, '/journal/templates/journal')]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, '/journal/templates/journal')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
