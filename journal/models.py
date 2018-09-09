@@ -25,3 +25,13 @@ class PracticeItem(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Session(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user = models.ForeignKey(User, on_delete="models.CASCADE")
+    practice_item = models.ForeignKey(PracticeItem, on_delete="models.PROTECT")
+    time = models.IntegerField('Practiced time')
+
+
+

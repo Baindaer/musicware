@@ -123,7 +123,12 @@ def practice_items(request):
                 return HttpResponseRedirect(reverse('practice_items'))
             item_id.delete()
             messages.success(request, 'Item deleted successfully')
-
+        if request.POST['submit'] == 'repertory_filter':
+            practice_item_data = PracticeItem.objects.filter(user_id=request.user, type='Repertory').order_by('-date')
+        if request.POST['submit'] == 'method_filter':
+            practice_item_data = PracticeItem.objects.filter(user_id=request.user, type='Method').order_by('-date')
+        if request.POST['submit'] == 'technique_filter':
+            practice_item_data = PracticeItem.objects.filter(user_id=request.user, type='Technique').order_by('-date')
     context = {
         'active': 'practice_items',
         'practice_item_data': practice_item_data,
