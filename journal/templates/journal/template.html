@@ -15,7 +15,6 @@
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
   {% block head %}
   {% endblock %}
-
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
@@ -26,7 +25,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
-        {% if not request.user.is_authenticated %}
+        {% if request.user.is_authenticated %}
 
           {% if active  == "playlists" %}
             <li class="nav-item active">
@@ -53,8 +52,18 @@
           {% else %}
             <li class="nav-item">
           {% endif %}
-              <a class="nav-link" href="{% url 'index' %}">
+              <a class="nav-link" href="{% url 'practice_items' %}">
                 <i class="fa fa-music" style="margin-right:5px"></i>Practice items
+              </a>
+            </li>
+
+          {% if active  == "composers" %}
+            <li class="nav-item active">
+          {% else %}
+            <li class="nav-item">
+          {% endif %}
+              <a class="nav-link" href="{% url 'composers' %}">
+                <i class="fa fa-pen-nib" style="margin-right:5px"></i>Composers
               </a>
             </li>
 
@@ -71,9 +80,8 @@
         {% endif %}
       </ul>
     <span class="navbar-text">
-
       {% if not request.user.is_authenticated %}
-        <a href="{% url 'index' %}" style="margin-right:10px">
+        <a href="{% url 'login' %}" style="margin-right:10px">
           <i class="fa fa-user" style="margin-right:5px" ></i>Login
         </a>
       {% else %}
@@ -81,7 +89,6 @@
            <i class="fa fa-user" style="margin-right:5px"></i>{{ request.user.first_name }}
          </a>
       {% endif %}
-
     </span>
     </div>
   </nav>
@@ -98,8 +105,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
           integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
   </script>
-  <script src="{% static 'journal/js/bootstrap.js' %}"></script></body>
+  <script src="{% static 'journal/js/bootstrap.js' %}"></script>
   <script src="{% static 'journal/js/template.js' %}"></script>
   {% block scripts %}
   {% endblock %}
+  {% for m in messages %}
+    {% if m.level_tag == 'error' %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+    {% elif m.level_tag == 'success' %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+    {% else %}
+      </div>
+    {% endif %}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {{ m.message }}
+    </div>
+  {% endfor %}
+</body>
 </html>
