@@ -27,6 +27,25 @@ class PracticeItem(models.Model):
         return self.name
 
 
+class Playlist(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField('Name', max_length=64)
+    user = models.ForeignKey(User, on_delete="models.CASCADE")
+
+    def __str__(self):
+        return self.name
+
+
+class PlaylistLine(models.Model):
+    id = models.IntegerField(primary_key=True)
+    sequence = models.IntegerField('Sequence')
+    item = models.ForeignKey(PracticeItem, on_delete="models.CASCADE")
+    playlist = models.ForeignKey(Playlist, on_delete="models.CASCADE")
+
+    def __str__(self):
+        return self.item.name
+
+
 class Session(models.Model):
     id = models.IntegerField(primary_key=True)
     user = models.ForeignKey(User, on_delete="models.CASCADE")

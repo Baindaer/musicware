@@ -1,0 +1,91 @@
+{% extends "journal/template.html" %}
+{% load static %}
+
+{% block page_tittle %}
+  {{ playlist.name }}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href={% url 'playlists' %}>Playlists</a></li>
+    <li class="breadcrumb-item active">{{ playlist.name }}</li>
+  </ol>
+
+  {% if playlist_lines %}
+    <ul class="list-group">
+      {% for line in playlist_lines %}
+        <li class="list-group-item d-flex align-items-center justify-content-between">
+          <span>
+            <div class="btn-group" role="group" aria-label="controls">
+              <div role="group">
+                <a id="btnGroupDrop1" class="dropdown-toggle pretext" style="margin-left: -10px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <a class="dropdown-item" href="/move_playlist_line/{{ line.id }}/up"><i class="fa fa-arrow-circle-up pretext text-warning" aria-hidden="true"></i>Move Up</a>
+                  <a class="dropdown-item" href="/move_playlist_line/{{ line.id }}/down"><i class="fa fa-arrow-circle-down pretext text-warning" aria-hidden="true"></i>Move Down</a>
+                  <a class="dropdown-item" href="/delete_playlist_line/{{ line.id }}"><i class="fa fa-trash pretext text-warning" aria-hidden="true"></i>Delete Item</a>
+                </div>
+              </div>
+            </div>
+            {{ line.item }}
+          </span>
+          <a href="/"><i class="fa fa-play pretext text-primary" aria-hidden="true"></i></a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <button data-toggle="modal" data-target="#modalList" class="float btn btn-success" data-playlist-id="{{ playlist.id }}">
+    <i class="fa fa-plus my-float"></i>
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modalList" tabindex="-1" role="dialog" aria-labelledby="modalList" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalList">Add item</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+          <form action="{% url 'playlist_view' playlist.id %}" method="POST">
+            {% csrf_token %}
+            <div class="md-form mb-2 d-none">
+              <label for="playlist_id">ID</label>
+              <input type="text" id="playlist_id" name="playlist_id" class="form-control">
+            </div>
+            <div class="md-form mb-2">
+              <label data-error="wrong" data-success="right" for="item">Practice Item</label>
+              <select id="item" name="item" class="form-control validate">
+                <option value=""></option>
+                {% for item in available_items %}
+                  <option value="{{item.id}}">{{item.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="submit" value="save" id="save_btn">Add item</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import connection
+from django.db.models import Q
 
 from .models import *
 
@@ -135,6 +136,80 @@ def practice_items(request):
         'composers': composer_data,
     }
     return render(request, 'journal/practice_items.html', context)
+
+
+def playlists(request):
+    playlist_data = Playlist.objects.filter(user_id=request.user).order_by('-id')
+    context = {
+        'active': 'playlists',
+        'playlists': playlist_data,
+    }
+    return render(request, 'journal/playlists.html', context)
+
+
+def playlist_view(request, playlist_id):
+    try:
+        playlist_data = Playlist.objects.get(id=playlist_id)
+    except models.ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse('playlists'))
+    playlist_lines = PlaylistLine.objects.filter(playlist=playlist_id).order_by('sequence')
+    item_data = PracticeItem.objects.filter(user_id=request.user).order_by('name')
+    context = {
+        'active': 'playlists',
+        'playlist': playlist_data,
+        'playlist_lines': playlist_lines,
+        'available_items': item_data
+    }
+    if request.method == 'POST':
+        if request.POST['submit'] == 'save':
+            item = PracticeItem.objects.get(id=request.POST['item'])
+            new_line = PlaylistLine(
+                item=item,
+                playlist=playlist_data,
+                sequence=100,
+            )
+            new_line.save()
+
+    return render(request, 'journal/playlist_view.html', context)
+
+
+def delete_playlist_line(request, line_id):
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login')
+        return HttpResponseRedirect(reverse('login'))
+    playlist_line = PlaylistLine.objects.get(id=line_id)
+    playlist = playlist_line.playlist.id
+    playlist_line.delete()
+    return HttpResponseRedirect(reverse('playlist_view', args=(playlist,)))
+
+
+def move_playlist_line(request, line_id, dir):
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login')
+        return HttpResponseRedirect(reverse('login'))
+    playlist_line = PlaylistLine.objects.get(id=line_id)
+    playlist = playlist_line.playlist.id
+    playlist_lines = PlaylistLine.objects.filter(playlist=playlist).order_by('sequence')
+    seq, from_seq, to_seq = 1, 0, 0
+    for line in playlist_lines:
+        line.sequence = seq
+        if line.id == line_id:
+            from_seq = seq
+        seq += 1
+        line.save()
+    if dir == 'down':
+        to_seq = from_seq + 1
+    elif dir == 'up':
+        to_seq = from_seq - 1
+    for line in playlist_lines:
+        if line.sequence == to_seq:
+            line.sequence = from_seq
+            line.save()
+    playlist_line.sequence = to_seq
+    playlist_line.save()
+
+    return HttpResponseRedirect(reverse('playlist_view', args=(playlist,)))
+
 
 
 
