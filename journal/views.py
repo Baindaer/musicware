@@ -139,7 +139,15 @@ def practice_items(request):
 
 
 def playlists(request):
-    playlist_data = Playlist.objects.filter(user_id=request.user).order_by('-id')
+    if request.method == 'POST':
+        if request.POST['submit'] == 'save':
+
+            new_playlist = Playlist(
+                name=request.POST['name'],
+                user=request.user,
+            )
+            new_playlist.save()
+    playlist_data = Playlist.objects.filter(user_id=request.user).order_by('id')
     context = {
         'active': 'playlists',
         'playlists': playlist_data,
@@ -169,6 +177,14 @@ def playlist_view(request, playlist_id):
                 sequence=100,
             )
             new_line.save()
+        if request.POST['submit'] == 'rename':
+            playlist_data.name = request.POST['name']
+            playlist_data.save()
+            messages.success(request, 'Playlist renamed successfully')
+        if request.POST['submit'] == 'delete_playlist':
+            playlist_data.delete()
+            messages.success(request, 'Playlist removed successfully')
+            return HttpResponseRedirect(reverse('playlists'))
 
     return render(request, 'journal/playlist_view.html', context)
 

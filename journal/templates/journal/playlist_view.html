@@ -33,7 +33,7 @@
             </div>
             {{ line.item }}
           </span>
-          <a href="/"><i class="fa fa-play pretext text-primary" aria-hidden="true"></i></a>
+          <a href="#modalSession" data-toggle="modal" data-target="#modalSession"><i class="fa fa-play pretext text-primary" aria-hidden="true"></i></a>
         </li>
       {% endfor %}
     </ul>
@@ -43,9 +43,22 @@
   <br/>
   <br/>
   <br/>
-  <button data-toggle="modal" data-target="#modalList" class="float btn btn-success" data-playlist-id="{{ playlist.id }}">
+
+  <form action="{% url 'playlist_view' playlist.id %}" method="POST">
+    {% csrf_token %}
+    <div class="btn-group float2" role="group" aria-label="Filters">
+      <a data-toggle="modal" data-target="#modalRename" class="btn btn-info">
+        <i class="fa fa-quote-left text-white"></i>
+      </a>
+      <button type="submit" name="submit" value="delete_playlist" class="btn btn-warning"><i class="fa fa-trash" aria-hidden="true"></i></button>
+    </div>
+  </form>
+
+  <button data-toggle="modal" data-target="#modalList" class="float btn btn-success">
     <i class="fa fa-plus my-float"></i>
   </button>
+
+
 
   <!-- Modal -->
   <div class="modal fade" id="modalList" tabindex="-1" role="dialog" aria-labelledby="modalList" aria-hidden="true">
@@ -82,10 +95,76 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="modalRename" tabindex="-1" role="dialog" aria-labelledby="modalRename" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRename">Rename playlist</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body mx-3">
+          <form action="{% url 'playlist_view' playlist.id %}" method="POST">
+            {% csrf_token %}
+            <div class="md-form mb-2">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" class="form-control">
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="submit" value="rename" id="rename">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Session -->
+  <div class="modal fade" id="modalSession" tabindex="-1" role="dialog" aria-labelledby="modalSession" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSession">Practicing</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body mx-3 align-content-center">
+          <form action="{% url 'playlist_view' playlist.id %}" method="POST">
+            {% csrf_token %}
+            <div class="md-form mb-2 d-none">
+              <label for="id">Name</label>
+              <input type="number" id="id" name="id" class="form-control">
+            </div>
+            <div class="md-form mb-2">
+              <textarea class="form-control-lg timer bg-transparent border-0 text-white text-center" rows="1" name="timer" id="timerdiv" placeholder="Time"></textarea>
+            </div>
+            <div class="md-form mb-2">
+              <textarea id="notes" name="notes" rows="5" class="form-control" placeholder="Notes"></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <a id="start_timer" class="btn btn-success"><i class="fa fa-play text-white"></i></a>
+              <a id="pause_timer" class="btn btn-warning text-white"><i class="fa fa-pause text-white"></i></a>
+              <button type="submit" class="btn btn-primary" name="submit" value="done" id="rename">Done</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 
 
 {% endblock %}
 
 {% block scripts %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <script src="{% static 'journal/js/countimer.js' %}"></script>
+  <script src="{% static 'journal/js/playlist_view.js' %}"></script>
+
+
 {% endblock %}

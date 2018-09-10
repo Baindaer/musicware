@@ -22,6 +22,10 @@ body {
 	text-align:center;
 }
 
+.timer {
+    margin-left: 18%;
+}
+
 .float2{
 	position:fixed;
 	width:40px;

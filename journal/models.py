@@ -35,6 +35,9 @@ class Playlist(models.Model):
     def __str__(self):
         return self.name
 
+    def get_lines(self):
+        return PlaylistLine.objects.filter(playlist=self.id).count()
+
 
 class PlaylistLine(models.Model):
     id = models.IntegerField(primary_key=True)
