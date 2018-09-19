@@ -1,0 +1,78 @@
+{% extends "journal/template.html" %}
+{% load static %}
+
+{% block page_tittle %}
+  Sessions
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+
+   <form action="{% url 'sessions' %}" method="POST">
+      {% csrf_token %}
+      <div class="btn-group" role="group" aria-label="Filters">
+        <button type="submit" name="submit" value="by_week" class="btn btn-primary"><i class="fa fa-calendar pretext" aria-hidden="true"></i> Week</button>
+        <button type="submit" name="submit" value="by_day" class="btn btn-warning"><i class="fa fa-calendar pretext" aria-hidden="true"></i> Day</button>
+      </div>
+    </form>
+    <br/>
+
+  {% if sessions %}
+    <div class="list-group">
+      {% for d in date_list %}
+
+          <a class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <p class="text-success"><b>{{ d.0 }}</b></p>
+              <p><kbd class="badge-light"><i class="fa fa-clock text-dark" aria-hidden="true"></i> {{ d.1 }} min</kbd></p>
+            </div>
+            {% for s in sessions %}
+              {% if s.0 == d.0 %}
+                <div class="d-flex w-100 justify-content-between">
+                <div>
+                  {% if s.3 == 'Repertory' %}
+                    <i class="fa fa-music text-info pretext" aria-hidden="true"></i><span class="mb-1 text-primary">{{ s.1 }}</span>
+                  {% elif s.3 == 'Technique'%}
+                    <i class="fa fa-trophy text-primary pretext" aria-hidden="true"></i><span class="mb-1 text-primary">{{ s.1 }}</span>
+                  {% elif s.3 == 'Method'%}
+                    <i class="fa fa-flask text-warning pretext" aria-hidden="true"></i><span class="mb-1 text-primary">{{ s.1 }}</span>
+                  {% endif %}
+                </div>
+                  <kbd>{{ s.4 }} min</kbd>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                  {% if s.6 %}
+                  <p style="line-height: 1.0;">
+                  {% for note in s.6 %}
+                    <small class="text-muted"><i class="fa fa-asterisk pretext"></i>{{ note }}</small> <br/>
+                  {% endfor %}
+                  </p>
+                {% else %}
+                    <span></span>
+                {% endif %}
+                  <span class="stars text-warning text-right" style="min-width: 92px" data-rating={{ s.5 }} data-num-stars="5"></span>
+
+                </div>
+
+
+              {% endif %}
+            {% endfor %}
+
+          </a>
+
+    {% endfor %}
+
+    </div>
+  {% else %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      Sessions not found for user {{ request.user.first_name }}
+    </div>
+  {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -54,6 +54,13 @@ class Session(models.Model):
     user = models.ForeignKey(User, on_delete="models.CASCADE")
     practice_item = models.ForeignKey(PracticeItem, on_delete="models.PROTECT")
     time = models.IntegerField('Practiced time')
+    rate = models.FloatField('Rate')
+    note = models.TextField('Notes', max_length=256, blank=True, null=True)
+    date = models.DateField('Date')
+
+    def __str__(self):
+        return str(self.date) + ' ' + str(self.practice_item.name)
+
 
 
 

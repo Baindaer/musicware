@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
-
+from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.contrib import auth, messages
 from django.urls import reverse
@@ -14,7 +13,37 @@ from .models import *
 
 
 def index(request):
-    context = {'active': 'home'}
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login')
+        return HttpResponseRedirect(reverse('login'))
+
+    # Total time
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT sum(time) from journal_session WHERE user_id = {user}".format(user=request.user.id))
+        total_time = cursor.fetchall()
+    if total_time:
+        total_time = total_time[0][0]
+    else:
+        total_time = 0
+
+    # Week time
+    with connection.cursor() as cursor:
+        day_m7 = datetime.strftime(datetime.now() - timedelta(days=7), "%Y-%m-%d")
+        cursor.execute("SELECT sum(time) from journal_session "
+                       "WHERE user_id = {user} and date >= {date}".format(user=request.user.id, date=day_m7))
+        week_time = cursor.fetchall()
+    if week_time:
+        week_time = week_time[0][0]
+    else:
+        week_time = 0
+
+
+    context = {
+        'active': 'home',
+        'total_time': total_time,
+        'week_time': week_time,
+    }
+
 
     return render(request, 'journal/index.html', context)
 
@@ -185,6 +214,22 @@ def playlist_view(request, playlist_id):
             playlist_data.delete()
             messages.success(request, 'Playlist removed successfully')
             return HttpResponseRedirect(reverse('playlists'))
+        if request.POST['submit'] == 'done':
+            line_id = PlaylistLine.objects.get(id=request.POST['id'])
+            time = datetime.strptime(request.POST['timer'], "%H:%M:%S").minute
+            if time:
+                new_session = Session(
+                    user=request.user,
+                    practice_item=line_id.item,
+                    time=time,
+                    rate=int(request.POST['selected_rating']),
+                    note=request.POST['notes'],
+                    date=datetime.now(),
+                )
+                new_session.save()
+                messages.success(request, "Session saved")
+            else:
+                messages.error(request, "Not enought practice time to register")
 
     return render(request, 'journal/playlist_view.html', context)
 
@@ -225,6 +270,78 @@ def move_playlist_line(request, line_id, dir):
     playlist_line.save()
 
     return HttpResponseRedirect(reverse('playlist_view', args=(playlist,)))
+
+
+def sessions(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'You need to login')
+        return HttpResponseRedirect(reverse('login'))
+    sd_list = []
+    date_data = []
+    by_day = False
+    if request.method == 'POST':
+        if request.POST['submit'] == 'by_week':
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT strftime('%Y-%W', js.date), jp.name, jc.name, jp.type, "
+                               "sum(js.time), round(avg(js.rate),0), group_concat(js.note, '|') "
+                               "FROM journal_session js "
+                               "INNER JOIN journal_practiceitem jp ON js.practice_item_id = jp.id "
+                               "LEFT JOIN journal_composer jc on jp.composer_id = jc.id "
+                               "WHERE js.user_id = {user} GROUP BY js.practice_item_id, strftime('%Y-%W', js.date) "
+                               "ORDER BY js.date DESC".format(user=request.user.id))
+                session_data = cursor.fetchall()
+                cursor.execute("SELECT strftime('%Y-%W', js.date), sum(js.time) "
+                               "FROM journal_session js "
+                               "WHERE js.user_id = {user} GROUP BY strftime('%Y-%W', js.date) "
+                               "ORDER BY js.date DESC".format(user=request.user.id))
+                date_data = cursor.fetchall()
+            sd_list = []
+            for item in session_data:
+                item2 = list(item)
+                notes = item[6].split("|")
+                a = ['']
+                if notes != a:
+                    item2[6] = notes
+                else:
+                    item2[6] = False
+                sd_list.append(item2)
+        if request.POST['submit'] == 'by_day':
+            by_day = True
+    else:
+        by_day = True
+
+    if by_day:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT js.date, jp.name, jc.name, jp.type, "
+                           "sum(js.time), round(avg(js.rate),0), group_concat(js.note, '|') "
+                           "FROM journal_session js "
+                           "INNER JOIN journal_practiceitem jp ON js.practice_item_id = jp.id "
+                           "LEFT JOIN journal_composer jc on jp.composer_id = jc.id "
+                           "WHERE js.user_id = {user} GROUP BY js.practice_item_id, js.date "
+                           "ORDER BY js.date DESC".format(user=request.user.id))
+            session_data = cursor.fetchall()
+            cursor.execute("SELECT js.date, sum(js.time) "
+                           "FROM journal_session js "
+                           "WHERE js.user_id = {user} GROUP BY js.date "
+                           "ORDER BY js.date DESC".format(user=request.user.id))
+            date_data = cursor.fetchall()
+        sd_list = []
+        for item in session_data:
+            item2 = list(item)
+            notes = item[6].split("|")
+            a = ['']
+            if notes != a:
+                item2[6] = notes
+            else:
+                item2[6] = False
+            sd_list.append(item2)
+
+    context = {
+        'active': 'sessions',
+        'sessions': sd_list,
+        'date_list': date_data
+    }
+    return render(request, 'journal/sessions.html', context)
 
 
 

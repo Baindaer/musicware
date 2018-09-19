@@ -10,6 +10,25 @@
 
 {% block body %}
 
+  <h4>Welcome {{ request.user.first_name }}</h4>
+
+  <div class="card-columns">
+    <div class="card">
+      <div class="card-body bg-primary text-white">
+        <h5 class="card-title">Last week practiced time: {{ week_time }} min</h5>
+        <p class="card-text">Total practiced time: {{ total_time }} min</p>
+      </div>
+    </div>
+    <div class="card">
+      <a class="list-group-item-action" href="{% url 'playlists' %}">
+         <div class="card-body ">
+            <h5 class="card-title"><i class="fa fa-play pretext"></i>Playlists</h5>
+            <p class="card-text">See and manage your playlists</p>
+          </div>
+      </a>
+    </div>
+  </div>
+
 
 {% endblock %}
 
