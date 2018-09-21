@@ -148,29 +148,32 @@
             </div>
             <div id="rate_form">
               <div class="md-form mb-2">
-               <div class="form-group" id="rating-ability-wrapper">
-                  <label class="control-label text-center" for="rating">Rate your session<br/>
-                  <input type="hidden" id="selected_rating" name="selected_rating" required="required">
-                  </label>
-                  <h2 class="bold rating-header text-center" style="">
-                  <span class="selected-rating">0</span><small> / 5</small>
-                  </h2>
-                  <button type="button" class="btnrating btn btn-default btn-lg" data-attr="1" id="rating-star-1">
-                      <i class="fa fa-star" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btnrating btn btn-default btn-lg" data-attr="2" id="rating-star-2">
-                      <i class="fa fa-star" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btnrating btn btn-default btn-lg" data-attr="3" id="rating-star-3">
-                      <i class="fa fa-star" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btnrating btn btn-default btn-lg" data-attr="4" id="rating-star-4">
-                      <i class="fa fa-star" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btnrating btn btn-default btn-lg" data-attr="5" id="rating-star-5">
-                      <i class="fa fa-star" aria-hidden="true"></i>
-                  </button>
+                 <div class="form-group" id="rating-ability-wrapper">
+                    <label class="control-label text-center" for="rating">Rate your session<br/>
+                    <input type="hidden" id="selected_rating" name="selected_rating" required="required">
+                    </label>
+                    <h2 class="bold rating-header">
+                    <span class="selected-rating" style="margin-left:40px">0</span><small> / 5</small>
+                    </h2>
+                    <button type="button" class="btnrating btn btn-default" data-attr="1" id="rating-star-1">
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btnrating btn btn-default" data-attr="2" id="rating-star-2">
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btnrating btn btn-default" data-attr="3" id="rating-star-3">
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btnrating btn btn-default" data-attr="4" id="rating-star-4">
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btnrating btn btn-default" data-attr="5" id="rating-star-5">
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    </button>
+                 </div>
               </div>
+              <div class="md-form mb-2">
+                <textarea id="comment" name="comment" rows="3" class="form-control" placeholder="Comment"></textarea>
               </div>
             </div>
             <div class="modal-footer">
@@ -192,7 +195,6 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
   <script src="{% static 'journal/js/countimer.js' %}"></script>
   <script src="{% static 'journal/js/playlist_view.js' %}"></script>
 

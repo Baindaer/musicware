@@ -57,6 +57,7 @@ class Session(models.Model):
     rate = models.FloatField('Rate')
     note = models.TextField('Notes', max_length=256, blank=True, null=True)
     date = models.DateField('Date')
+    comment = models.TextField('Comment', max_length=256, blank=True, null=True)
 
     def __str__(self):
         return str(self.date) + ' ' + str(self.practice_item.name)
