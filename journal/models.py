@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Composer(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(User, on_delete="models.CASCADE")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField('Name', max_length=64)
     period = models.CharField('Music era', max_length=64)
 
@@ -15,9 +15,9 @@ class Composer(models.Model):
 
 class PracticeItem(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(User, on_delete="models.CASCADE")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField('Name', max_length=64)
-    composer = models.ForeignKey('Composer', on_delete="models.PROTECT", null=True, blank=True)
+    composer = models.ForeignKey('Composer', on_delete=models.PROTECT, null=True, blank=True)
     date = models.DateField('Date added')
     type = models.CharField('Type', max_length=32)
     self_appraisal = models.IntegerField('Self Appraisal')
@@ -30,7 +30,7 @@ class PracticeItem(models.Model):
 class Playlist(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField('Name', max_length=64)
-    user = models.ForeignKey(User, on_delete="models.CASCADE")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -42,8 +42,8 @@ class Playlist(models.Model):
 class PlaylistLine(models.Model):
     id = models.IntegerField(primary_key=True)
     sequence = models.IntegerField('Sequence')
-    item = models.ForeignKey(PracticeItem, on_delete="models.CASCADE")
-    playlist = models.ForeignKey(Playlist, on_delete="models.CASCADE")
+    item = models.ForeignKey(PracticeItem, on_delete=models.CASCADE)
+    playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.item.name
@@ -51,8 +51,8 @@ class PlaylistLine(models.Model):
 
 class Session(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(User, on_delete="models.CASCADE")
-    practice_item = models.ForeignKey(PracticeItem, on_delete="models.PROTECT")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    practice_item = models.ForeignKey(PracticeItem, on_delete=models.CASCADE)
     time = models.IntegerField('Practiced time')
     rate = models.FloatField('Rate')
     note = models.TextField('Notes', max_length=256, blank=True, null=True)
