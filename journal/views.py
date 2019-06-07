@@ -30,7 +30,7 @@ def index(request):
     with connection.cursor() as cursor:
         day_m7 = datetime.strftime(datetime.now() - timedelta(days=7), "%Y-%m-%d")
         cursor.execute("SELECT sum(time) from journal_session "
-                       "WHERE user_id = {user} and date >= {date}".format(user=request.user.id, date=day_m7))
+                       "WHERE user_id = {user} and date >= '{date}'".format(user=request.user.id, date=day_m7))
         week_time = cursor.fetchall()
     if week_time:
         week_time = week_time[0][0]
